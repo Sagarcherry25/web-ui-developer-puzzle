@@ -38,8 +38,10 @@ describe('BooksEffects', () => {
         );
         done();
       });
+      setTimeout(() => {
+        httpMock.expectOne('/api/books/search?q=').flush([createBook('A')]);
+      }, 600);
 
-      httpMock.expectOne('/api/books/search?q=').flush([createBook('A')]);
     });
 
     it('should call searchBooksFailure action on SEARCH API fails', done => {
@@ -53,9 +55,12 @@ describe('BooksEffects', () => {
         );
         done();
       });
-
-      httpMock.expectOne('/api/books/search?q=').error(new ErrorEvent(errMsg));
+      
+      setTimeout(()=>{
+        httpMock.expectOne('/api/books/search?q=').error(new ErrorEvent(errMsg));
+      }, 600);
+      
     });
-    
+
   });
 });
