@@ -5,12 +5,16 @@ import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { createBook, SharedTestingModule } from '@tmo/shared/testing';
 import { BooksFeatureModule } from '../books-feature.module';
 import { BookSearchComponent } from './book-search.component';
-import { addToReadingList, clearSearch, getAllBooks, searchBooks } from '@tmo/books/data-access';
+import { addToReadingList, clearSearch, getAllBooks, searchBooks, undoAddBookToReadingList } from '@tmo/books/data-access';
+import { OverlayContainer } from '@angular/cdk/overlay';
+import { Book } from '@tmo/shared/models';
 
 describe('ProductsListComponent', () => {
   let component: BookSearchComponent;
   let fixture: ComponentFixture<BookSearchComponent>;
   let mockStore: MockStore;
+  let oc: OverlayContainer;
+  let overlayContainerElement: HTMLElement;
   const initialState = { entities: {}, ids: [], loaded: false };
 
   beforeEach(async(() => {
@@ -24,6 +28,8 @@ describe('ProductsListComponent', () => {
     fixture = TestBed.createComponent(BookSearchComponent);
     component = fixture.componentInstance;
     mockStore = TestBed.inject(MockStore);
+    oc = TestBed.inject(OverlayContainer);
+    overlayContainerElement = oc.getContainerElement();
     mockStore.overrideSelector(getAllBooks, []);
     fixture.detectChanges();
   });
@@ -71,6 +77,16 @@ describe('ProductsListComponent', () => {
     fixture.detectChanges();
     expect(component.searchForm.valid).toBeTruthy();
     expect(mockStore.dispatch).toHaveBeenCalledWith(expectedAction);
+  });
+
+  it('should trigger snackBar to undo the addReadList', () => {
+    const book : Book = createBook('B');
+    const dispatchSpy = spyOn(mockStore, 'dispatch').and.callThrough();
+    component.addBookToReadingList(book);
+    const buttonElement: HTMLElement = overlayContainerElement.querySelector('.mat-simple-snackbar-action > button');
+    buttonElement?.click();
+    expect(mockStore.dispatch).toHaveBeenCalledWith(addToReadingList({ book }));
+    expect(dispatchSpy).toHaveBeenCalledWith(undoAddBookToReadingList({book}));
   });
 
 });

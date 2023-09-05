@@ -112,4 +112,73 @@ describe('ToReadEffects', () => {
         .flush(item, { status: 400, statusText: 'Cannot Delete Reading Item' });
     });
   });
+
+  describe('undoAddBook$', () => {
+    it('should work', (done) => {
+      const book = createBook('B');
+      actions = new ReplaySubject();
+      actions.next(ReadingListActions.undoAddBookToReadingList({ book }));
+
+      effects.undoAddBook$.subscribe((action) => {
+        expect(action).toEqual(
+          ReadingListActions.undoAddBookToReadingListSuccess({ book })
+        );
+        done();
+      });
+
+      httpMock.expectOne(`/api/reading-list/${book.id}`).flush(book);
+    });
+
+    it('should return failedUndoAddBookToReadingList with book, on fail', (done) => {
+      const book = createBook('B');
+      actions = new ReplaySubject();
+      actions.next(ReadingListActions.undoAddBookToReadingList({ book }));
+
+      effects.undoAddBook$.subscribe((action) => {
+        expect(action).toEqual(
+          ReadingListActions.failedUndoAddBookToReadingList({ book })
+        );
+        done();
+      });
+      httpMock.expectOne(`/api/reading-list/${book.id}`).flush(book, {
+        status: 400,
+        statusText: 'Failed to Undo Add to Reading List',
+      });
+    });
+  });
+
+  describe('undoRemoveBook$', () => {
+    it('should work', (done) => {
+      const item = createReadingListItem('B');
+      actions = new ReplaySubject();
+      actions.next(ReadingListActions.undoRemoveFromReadingList({ item }));
+
+      effects.undoRemoveBook$.subscribe((action) => {
+        expect(action).toEqual(
+          ReadingListActions.undoRemoveFromReadingListSuccess({ item })
+        );
+        done();
+      });
+
+      httpMock.expectOne('/api/reading-list').flush(item);
+    });
+
+    it('should return failedUndoRemoveFromReadingList with readingItem, on fail', (done) => {
+      const item = createReadingListItem('B');
+      actions = new ReplaySubject();
+      actions.next(ReadingListActions.undoRemoveFromReadingList({ item }));
+
+      effects.undoRemoveBook$.subscribe((action) => {
+        expect(action).toEqual(
+          ReadingListActions.failedUndoRemoveFromReadingList({ item })
+        );
+        done();
+      });
+      httpMock.expectOne(`/api/reading-list`).flush(item, {
+        status: 400,
+        statusText: 'Failed to Undo Remove from Reading List',
+      });
+    });
+  });
+
 });
