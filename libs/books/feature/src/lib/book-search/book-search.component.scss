@@ -20,6 +20,9 @@ form {
   margin: 2px;
   padding: $spacing-xxs;
   background-color: $gray10;
+  &:focus,:focus-visible,:focus-within{
+    outline: $gray30 auto;
+  }
 }
 
 .book--title {
@@ -68,5 +71,5 @@ form {
   justify-content: center;
   min-height: 50vh;
   font-size: 1.5rem;
-  color: $gray40;
+  color: $gray80;
 }
