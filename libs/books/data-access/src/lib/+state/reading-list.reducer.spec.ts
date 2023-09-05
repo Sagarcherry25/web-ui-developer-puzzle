@@ -32,6 +32,19 @@ describe('Books Reducer', () => {
       expect(result.ids.length).toEqual(3);
     });
 
+    it('loadBooksError should load error for reading list', () => {
+      const action = ReadingListActions.loadReadingListError({ error:'Error' });
+      const result: State = reducer(initialState, action);
+      expect(result.error).toBe('Error');
+    });
+
+    it('addToReadingList should add book to reading list', () => {
+      const book =createBook('A');
+      const action = ReadingListActions.addToReadingList({ book });
+      const result: State = reducer(initialState, action);
+      expect(result.ids).toEqual(['A']);
+    });
+
     it('failedAddToReadingList should undo book addition to the state', () => {
       const action = ReadingListActions.failedAddToReadingList({
         book: createBook('B')
@@ -40,6 +53,14 @@ describe('Books Reducer', () => {
       const result: State = reducer(state, action);
 
       expect(result.ids).toEqual(['A']);
+    });
+
+    it('removeFromReadingList should remove book from reading list', () => {
+      const item =createReadingListItem('A');
+      const action = ReadingListActions.removeFromReadingList({ item });
+      const result: State = reducer(initialState, action);
+      expect(result.entities).toEqual({});
+      expect(result.ids).toEqual([]);
     });
 
     it('failedRemoveFromReadingList should undo book removal from the state', () => {

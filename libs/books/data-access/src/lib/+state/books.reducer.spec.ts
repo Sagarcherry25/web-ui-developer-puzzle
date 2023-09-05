@@ -13,6 +13,12 @@ describe('Books Reducer', () => {
       expect(result.loaded).toBe(true);
       expect(result.ids.length).toBe(3);
     });
+
+    it('loadBooksFailure should update error state', () => {
+      const action = BooksActions.searchBooksFailure({ error:'Error' });
+      const result: State = reducer(initialState, action);
+      expect(result.error).toBe('Error');
+    });
   });
 
   describe('unknown action', () => {
