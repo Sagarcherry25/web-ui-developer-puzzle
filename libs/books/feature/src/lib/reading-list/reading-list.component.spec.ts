@@ -4,7 +4,7 @@ import { createReadingListItem, SharedTestingModule } from '@tmo/shared/testing'
 import { ReadingListComponent } from './reading-list.component';
 import { BooksFeatureModule } from '@tmo/books/feature';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { getReadingList, removeFromReadingList } from '@tmo/books/data-access';
+import { getReadingList, markAsRead, removeFromReadingList } from '@tmo/books/data-access';
 
 describe('ReadingListComponent', () => {
   let component: ReadingListComponent;
@@ -40,4 +40,14 @@ describe('ReadingListComponent', () => {
     expect(mockStore.dispatch).toHaveBeenCalledWith(expectedAction);
   });
   
+  it('should call mark reading book as finished action with correct reading book', () => {
+    const item = createReadingListItem('A');
+    item.finished = true;
+    const expectedAction = markAsRead({ item });
+    spyOn(mockStore, 'dispatch').and.callThrough();
+    component.markAsRead(item);
+    fixture.detectChanges();
+    expect(mockStore.dispatch).toHaveBeenCalledWith(expectedAction);
+  });
+
 });

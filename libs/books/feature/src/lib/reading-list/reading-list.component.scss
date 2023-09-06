@@ -19,6 +19,15 @@
     flex-direction: column;
     justify-content: center;
   }
+  .reading-list-finish{
+    color: $green;
+  }
+  .reading-list-actions{
+    flex-direction: row;
+    .finish-btn {
+      color: $green;
+    }
+  }
 }
 
 .reading-list-item--cover {
