@@ -57,8 +57,26 @@ const readingListReducer = createReducer(
     readingListAdapter.removeOne(action.book.id, state)
   ),
   on(ReadingListActions.failedRemoveFromReadingList, (state, action) =>
-  readingListAdapter.addOne(action.item, state)
-)
+  readingListAdapter.addOne(action.item, state),
+  ),
+  on(ReadingListActions.confirmedMarkAsRead, (state, action) => {
+    return readingListAdapter.updateOne({
+      id: action.item.bookId,
+      changes: {
+        finished: action.item.finished,
+        finishedDate: action.item.finishedDate        
+      },
+    }, state)
+  }),
+  on(ReadingListActions.failedMarkAsRead, (state, action) => {
+    return readingListAdapter.updateOne({
+      id: action.item.bookId,
+      changes: {
+        finished: false,
+        finishedDate: null
+      }
+    }, state)
+  })
 );
 
 export function reducer(state: State | undefined, action: Action) {
